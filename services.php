@@ -24,7 +24,7 @@ if (isset($_POST["save"])) {
     $name = $_POST["name"];
     $department_id = $_POST["department_id"];
     $id = $_POST["id"];
-    $query = "update `services` set `name` ='$name',`department_id`=$department_id where `service_id`='$id'";
+    $query = "update `services` set `name` ='$name',`department_id`=$department_id where `service_id`=$id";
     mysql_query($query, $myConnect);
 }
 if (isset($_POST["delete"])) {
