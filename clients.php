@@ -63,6 +63,7 @@ mysql_free_result($mysql_query);
         <td class='menu'>
             <a href="index.php">Главная</a>
             <a href="clients.php">Клиенты</a>
+            <a href="departments.php">Отделы</a>
         </td>
         <td>
             <form action="clients.php" method="post">
