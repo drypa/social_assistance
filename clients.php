@@ -30,12 +30,19 @@ if (isset($_POST["save"])) {
     $name = $_POST["name"];
     $middlename = $_POST["middlename"];
     $passport = $_POST["passport"];
+    $id = $_POST["id"];
     $birth_date = $_POST["birth_date"];
     $birth_date = date("Y-m-d", strtotime($birth_date));
     $query = "update `client` set `name` ='$name',`surname`='$surname',`passport`='$passport',`middlename`='$middlename',
-                `birth_date`='$birth_date'";
+                `birth_date`='$birth_date'
+                where `passport`='$id'";
     mysql_query($query, $myConnect);
 }
+    if (isset($_POST["delete"])) {
+        $passport = $_POST["client"];
+        mysql_query("DELETE from `client` where `passport`='$passport'", $myConnect);
+    }
+
 
 
 $mysql_query = mysql_query("select * from `client`", $myConnect);
@@ -99,6 +106,7 @@ foreach ($clients as $cleint) {
     $passport = $cleint["passport"];
     $birth_date = $cleint["birth_date"];
     echo("<form action='clients.php' method='post'>");
+    echo("<input type='hidden' name='id' value='$passport' ");
     echo("<label>Фамилия:<input type='text' name='surname' value='$surname'></label>");
     echo("<label>Имя:<input type='text' name='name' value='$name'></label>");
     echo("<label>Отчество:<input type='text' name='middlename' value='$middlename'></label>");
@@ -107,6 +115,19 @@ foreach ($clients as $cleint) {
     echo("<input name='save' value='Сохранить' type='submit'/></form>");
 }
 ?>
-
+<form action="clients.php" method="post">
+    <select name='client'>
+        <?php
+        foreach ($clients as $cleint) {
+            $surname = $cleint["surname"];
+            $name = $cleint["name"];
+            $middlename = $cleint["middlename"];
+            $passport = $cleint["passport"];
+            echo("<option value='$passport'>$surname $name $middlename ($passport)</option> ");
+        }
+        ?>
+    </select>
+    <input name='delete' value='Удалить' type='submit'/>
+</form>
 </body>
 </html>
