@@ -51,6 +51,7 @@ mysql_free_result($mysql_query);
             <a href="index.php">Главная</a>
             <a href="clients.php">Клиенты</a>
             <a href="departments.php">Отделы</a>
+            <a href="services.php">Услуги</a>
         </td>
         <td>
             <form action="departments.php" method="post">
