@@ -26,6 +26,7 @@ mysql_set_charset('utf8');
             <a href="clients.php">Клиенты</a>
             <a href="departments.php">Отделы</a>
             <a href="services.php">Услуги</a>
+            <a href="contracts.php">Дороворы</a>
         </td>
         <td></td>
     </tr>
