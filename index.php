@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="style.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
@@ -18,6 +19,14 @@ mysql_select_db('social', $mysql_connect);
 mysql_set_charset('utf8');
 
 ?>
-
+<table>
+    <tr>
+        <td class='menu'>
+            <a href="index.php">Главная</a>
+            <a href="clients.php">Клиенты</a>
+        </td>
+        <td></td>
+    </tr>
+</table>
 </body>
 </html>
