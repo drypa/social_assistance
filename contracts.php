@@ -16,20 +16,27 @@ mysql_select_db('social', $myConnect);
 mysql_set_charset('utf8');
 
 if (isset($_POST["add"])) {
-    $name = $_POST["name"];
-    $department_id = $_POST["department_id"];
-    mysql_query("INSERT INTO `contract` (`name`,`department_id`) VALUES ('$name',$department_id)", $myConnect);
+    $client = $_POST["client"];
+    $start = $_POST["start"];
+    $end = $_POST["end"];
+    $end = date("Y-m-d", strtotime($end));
+    $start = date("Y-m-d", strtotime($start));
+
+    mysql_query("INSERT INTO `contract` (`start`,`end`,`client_passport`)
+                 VALUES ('$start','$end','$client')", $myConnect);
 }
 if (isset($_POST["save"])) {
-    $name = $_POST["name"];
-    $department_id = $_POST["department_id"];
-    $id = $_POST["id"];
-    $query = "update `contract` set `name` ='$name',`department_id`=$department_id where `service_id`=$id";
+    $client = $_POST["client"];
+    $start = $_POST["start"];
+    $end = $_POST["end"];
+    $contract_num = $_POST["contract_num"];
+    $query = "update `contract` set `client_passport` ='$client',
+                `start`='$start', `end`='$end' where `contract_num`=$contract_num";
     mysql_query($query, $myConnect);
 }
 if (isset($_POST["delete"])) {
-    $id = $_POST["service_id"];
-    mysql_query("DELETE from `contract` where `service_id`=$id", $myConnect);
+    $id = $_POST["contract_num"];
+    mysql_query("DELETE from `contract` where `contract_num`=$id", $myConnect);
 }
 
 
@@ -70,7 +77,7 @@ mysql_free_result($mysql_query);
             <form action="contracts.php" method="post">
                 <div>
                     <label>Клиент:
-                        <select name='department_id'>
+                        <select name='client'>
                             <?php
                             foreach ($clients as $client) {
                                 $surname = $client["surname"];
@@ -111,7 +118,7 @@ foreach ($contracts as $contract) {
 
     echo("<form action='contracts.php' method='post'>");
     echo("<input type='hidden' name='contract_num' value='$contract_num' ");
-    echo("<label>Отдел: <select name='department_id'>");
+    echo("<label>Клиент: <select name='client'>");
     foreach ($clients as $client) {
         $surname = $client["surname"];
         $name = $client["name"];
@@ -134,14 +141,17 @@ foreach ($contracts as $contract) {
 }
 ?>
 <form action="contracts.php" method="post">
-    <select name='service_id'>
+    <select name='contract_num'>
         <?php
         foreach ($contracts as $contract) {
             $client_passport = $contract["client_passport"];
             $contract_num = $contract["contract_num"];
             $end = $contract["end"];
             $start = $contract["start"];
-            echo("<option value='$contract_num'>$contract_num(с $start по $end)</option> ");
+            $surname = $contract["surname"];
+            $name = $contract["name"];
+            $middlename = $contract["middlename"];
+            echo("<option value='$contract_num'>$contract_num(с $start по $end) клиент: $surname $name $middlename</option> ");
         }
         ?>
     </select>
