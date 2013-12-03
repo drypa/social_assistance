@@ -4,3 +4,9 @@
 .menu a {
     display: block;
 }
+.center{
+    text-align: center;
+}
+.content{
+    width: 100%;
+}
