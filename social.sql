@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost:3306
--- Время создания: Дек 04 2013 г., 07:52
+-- Время создания: Дек 04 2013 г., 08:00
 -- Версия сервера: 5.5.32
 -- Версия PHP: 5.4.20
 
@@ -48,8 +48,8 @@ TRUNCATE TABLE `client`;
 --
 
 INSERT INTO `client` (`passport`, `surname`, `name`, `middlename`, `birth_date`) VALUES
-('1111 0501', 'Петров', 'Петр', 'Петрович', '1975-01-01'),
-('4000 1235', 'Иванов', 'Иван', 'Иванович', '1980-01-10');
+('1111 0502', 'Петров', 'Петр', 'Петрович', '1975-01-01'),
+('4000 1231', 'Иванов', 'Иван', 'Иванович', '1980-01-10');
 
 -- --------------------------------------------------------
 
@@ -77,8 +77,8 @@ TRUNCATE TABLE `contract`;
 --
 
 INSERT INTO `contract` (`contract_num`, `start`, `end`, `client_passport`) VALUES
-(1, '2010-01-11', '2011-02-11', '1111 0501'),
-(2, '2010-01-02', '2010-01-03', '4000 1235');
+(1, '2010-01-11', '2011-02-11', '1111 0502'),
+(2, '2010-01-02', '2010-01-03', '4000 1231');
 
 -- --------------------------------------------------------
 
@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `service_log` (
   PRIMARY KEY (`id`),
   KEY `contract_num` (`contract_num`,`service_id`),
   KEY `service_id` (`service_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=cp1251 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=cp1251 AUTO_INCREMENT=6 ;
 
 --
 -- Очистить таблицу перед добавлением данных `service_log`
@@ -176,7 +176,7 @@ INSERT INTO `service_log` (`id`, `contract_num`, `service_id`, `date`) VALUES
 -- Ограничения внешнего ключа таблицы `contract`
 --
 ALTER TABLE `contract`
-  ADD CONSTRAINT `contract_ibfk_1` FOREIGN KEY (`client_passport`) REFERENCES `client` (`passport`);
+  ADD CONSTRAINT `contract_ibfk_1` FOREIGN KEY (`client_passport`) REFERENCES `client` (`passport`) ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `services`
