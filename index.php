@@ -5,7 +5,8 @@
 </head>
 
 <body>
-<h2>База данных для учёта обслуженных граждан в СПб ГБУ «Центр социальной помощи семьи и детям Кронштадтского  района»</h2>
+<h2>База данных для учёта обслуженных граждан в СПб ГБУ «Центр социальной помощи семьи и детям Кронштадтского
+    района»</h2>
 
 <?php
 $server = 'localhost:3306';
@@ -17,6 +18,16 @@ if (!$myConnect) {
 }
 mysql_select_db('social', $myConnect);
 mysql_set_charset('utf8');
+
+if (isset($_POST["add"])) {
+    $contract_num = $_POST["contract_num"];
+    $service_id = $_POST["service_id"];
+    $date = $_POST["date"];
+    $query = "insert into `service_log` (`contract_num`,`service_id`,`date`)
+              values ($contract_num,$service_id,'$date')";
+    mysql_query($query, $myConnect);
+}
+
 
 //запрос контрактов
 $mysql_query = mysql_query("select c.*,cl.name,cl.middlename,cl.surname from `contract` as c  join `client` as cl on c.client_passport = cl.passport", $myConnect);
@@ -30,15 +41,18 @@ while ($row = mysql_fetch_array($mysql_query)) {
 mysql_free_result($mysql_query);
 
 
-$mysql_query = mysql_query("select * from `client`", $myConnect);
+
+
+$mysql_query = mysql_query("select * from `services`", $myConnect);
 if (!$mysql_query) {
     die(mysql_error());
 }
-$clients = array();
+$services = array();
 while ($row = mysql_fetch_array($mysql_query)) {
-    $clients[] = $row;
+    $services[] = $row;
 }
 mysql_free_result($mysql_query);
+
 ?>
 <table class="content">
     <tr>
@@ -51,8 +65,8 @@ mysql_free_result($mysql_query);
         </td>
         <td>
             <form action="index.php" method="post">
-            <h3 class="center">Журнал учета услуг</h3>
-            Услуга:<select name='contract_num'>
+                <h3 class="center">Журнал учета услуг</h3>
+                В рамках договора:<select name='contract_num'>
                 <?php
                 foreach ($contracts as $contract) {
                     $client_passport = $contract["client_passport"];
@@ -66,24 +80,22 @@ mysql_free_result($mysql_query);
                 }
                 ?>
             </select>
-            <br>
-            Оказана пользователю:
-            <select name='client'>
-                <?php
-                foreach ($clients as $cleint) {
-                    $surname = $cleint["surname"];
-                    $name = $cleint["name"];
-                    $middlename = $cleint["middlename"];
-                    $passport = $cleint["passport"];
-                    echo("<option value='$passport'>$surname $name $middlename ($passport)</option> ");
-                }
-                ?>
-            </select>
-            <br>
-            Дата:
-            <input type="text" name='date'/>
-            <br>
-            <input type="submit" name='add' value="Сохранить">
+                <br>
+                Оказана услуга:
+                <select name='service_id'>
+                    <?php
+                    foreach ($services as $service) {
+                        $name = $service["name"];
+                        $id = $service["service_id"];
+                        echo("<option value='$id'>$name</option> ");
+                    }
+                    ?>
+                </select>
+                <br>
+                Дата:
+                <input type="text" name='date'/>
+                <br>
+                <input type="submit" name='add' value="Сохранить">
             </form>
         </td>
     </tr>
