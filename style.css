@@ -10,3 +10,6 @@
 .content{
     width: 100%;
 }
+th{
+    background-color: #ddd;
+}

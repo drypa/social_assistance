@@ -55,7 +55,8 @@ mysql_free_result($mysql_query);
 
 
 $mysql_query = mysql_query(
-"SELECT log.*,s.name as service_name,cl.passport,cl.name as client_name,cl.middlename, cl.surname,cl.birth_date FROM `service_log` as log
+"SELECT log.*,s.name as service_name,cl.passport, d.name as department,
+cl.name as client_name,cl.middlename, cl.surname,cl.birth_date FROM `service_log` as log
 inner join `services` as s on s.service_id = log.service_id
 inner join `departments` as d on d.department_id = s.department_id
 inner join `contract` as c on c.contract_num = log.contract_num
@@ -115,6 +116,40 @@ mysql_free_result($mysql_query);
             </form>
         </td>
     </tr>
+</table>
+<table>
+    <tr>
+        <th>Номер договора</th>
+        <th>Название услуги</th>
+        <th>Отдел</th>
+        <th>Дата оказания услуги</th>
+        <th>ФИО клиента</th>
+        <th>Дата рождения клиента</th>
+    </tr>
+    <?php
+    foreach($logs as $l){
+        $id= $l['id'];
+        $contract_num= $l['contract_num'];
+        $service_id= $l['service_id'];
+        $date= $l['date'];
+        $service_name= $l['service_name'];
+        $passport = $l['passport'];
+        $department= $l['department'];
+        $client_name= $l['client_name'];
+        $middlename= $l['middlename'];
+        $birth_date= $l['birth_date'];
+        $surname= $l['surname'];
+        echo("<tr>");
+        echo("<td>$contract_num</td>");
+        echo("<td>$service_name</td>");
+        echo("<td>$department</td>");
+        echo("<td>$date</td>");
+        echo("<td>$surname $client_name $middlename</td>");
+        echo("<td>$birth_date</td>");
+        echo("</tr>");
+    }
+    ?>
+
 </table>
 </body>
 </html>
