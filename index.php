@@ -28,6 +28,10 @@ if (isset($_POST["add"])) {
               values ($contract_num,$service_id,'$date')";
     mysql_query($query, $myConnect);
 }
+    if (isset($_POST["del"])) {
+        $service_id = $_POST["service_id"];
+        mysql_query("delete from `service_log` where `id`=$service_id", $myConnect);
+    }
 
 
 //запрос контрактов
@@ -68,7 +72,7 @@ if (isset($_POST['search'])) {
     $department = $_POST['department_id'];
     $client = $_POST['client'];
     $date = $_POST['date'];
-    if($date){
+    if ($date) {
         $date = date("Y-m-d", strtotime($date));
     }
     if ($service > -1 || $department > -1 || $client > -1 || $date) {
@@ -96,7 +100,7 @@ if (isset($_POST['search'])) {
         $select_query = $select_query . " log.date = '$date'";
     }
 }
-//die($select_query);
+    $select_query = $select_query." order by log.id";
 $mysql_query = mysql_query($select_query, $myConnect);
 if (!$mysql_query) {
     die(mysql_error());
@@ -178,6 +182,7 @@ mysql_free_result($mysql_query);
 </table>
 <table>
     <tr>
+        <th>Номер записи</th>
         <th>Номер договора</th>
         <th>Название услуги</th>
         <th>Отдел</th>
@@ -199,6 +204,7 @@ mysql_free_result($mysql_query);
         $birth_date = $l['birth_date'];
         $surname = $l['surname'];
         echo("<tr>");
+        echo("<td>$id</td>");
         echo("<td>$contract_num</td>");
         echo("<td>$service_name</td>");
         echo("<td>$department</td>");
@@ -253,6 +259,28 @@ mysql_free_result($mysql_query);
     <input type="text" name='date'>
     <br>
     <input type="submit" name='search' value="Искать">
+</form>
+<br>
+<form action="index.php" method="post">
+<select name='service_id'>
+    <?php
+    foreach ($logs as $l) {
+        $id = $l['id'];
+        $contract_num = $l['contract_num'];
+        $service_id = $l['service_id'];
+        $date = $l['date'];
+        $service_name = $l['service_name'];
+        $passport = $l['passport'];
+        $department = $l['department'];
+        $client_name = $l['client_name'];
+        $middlename = $l['middlename'];
+        $birth_date = $l['birth_date'];
+        $surname = $l['surname'];
+        echo("<option value='$id'>Запись №$id № договора $contract_num c клиентом $surname $client_name $middlename  от $date</option> ");
+    }
+    ?>
+</select>
+<input type="submit" name='del' value="Удалить">
 </form>
 </body>
 </html>
