@@ -53,6 +53,22 @@ while ($row = mysql_fetch_array($mysql_query)) {
 }
 mysql_free_result($mysql_query);
 
+
+$mysql_query = mysql_query(
+"SELECT log.*,s.name as service_name,cl.passport,cl.name as client_name,cl.middlename, cl.surname,cl.birth_date FROM `service_log` as log
+inner join `services` as s on s.service_id = log.service_id
+inner join `departments` as d on d.department_id = s.department_id
+inner join `contract` as c on c.contract_num = log.contract_num
+inner join `client` as cl  on cl.passport = c.client_passport", $myConnect);
+if (!$mysql_query) {
+    die(mysql_error());
+}
+$logs = array();
+while ($row = mysql_fetch_array($mysql_query)) {
+    $logs[] = $row;
+}
+mysql_free_result($mysql_query);
+
 ?>
 <table class="content">
     <tr>
