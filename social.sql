@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost:3306
--- Время создания: Дек 04 2013 г., 07:27
+-- Время создания: Дек 04 2013 г., 07:52
 -- Версия сервера: 5.5.32
 -- Версия PHP: 5.4.20
 
@@ -149,7 +149,8 @@ CREATE TABLE IF NOT EXISTS `service_log` (
   `service_id` int(11) NOT NULL,
   `date` date NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `contract_num` (`contract_num`,`service_id`)
+  KEY `contract_num` (`contract_num`,`service_id`),
+  KEY `service_id` (`service_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=cp1251 AUTO_INCREMENT=5 ;
 
 --
@@ -166,6 +167,29 @@ INSERT INTO `service_log` (`id`, `contract_num`, `service_id`, `date`) VALUES
 (2, 2, 3, '2002-11-20'),
 (3, 1, 2, '2010-11-01'),
 (4, 2, 3, '2010-11-02');
+
+--
+-- Ограничения внешнего ключа сохраненных таблиц
+--
+
+--
+-- Ограничения внешнего ключа таблицы `contract`
+--
+ALTER TABLE `contract`
+  ADD CONSTRAINT `contract_ibfk_1` FOREIGN KEY (`client_passport`) REFERENCES `client` (`passport`);
+
+--
+-- Ограничения внешнего ключа таблицы `services`
+--
+ALTER TABLE `services`
+  ADD CONSTRAINT `services_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `service_log`
+--
+ALTER TABLE `service_log`
+  ADD CONSTRAINT `service_log_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`),
+  ADD CONSTRAINT `service_log_ibfk_1` FOREIGN KEY (`contract_num`) REFERENCES `contract` (`contract_num`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
