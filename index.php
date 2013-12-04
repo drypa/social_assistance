@@ -23,6 +23,7 @@ if (isset($_POST["add"])) {
     $contract_num = $_POST["contract_num"];
     $service_id = $_POST["service_id"];
     $date = $_POST["date"];
+    $date = date("Y-m-d", strtotime($date));
     $query = "insert into `service_log` (`contract_num`,`service_id`,`date`)
               values ($contract_num,$service_id,'$date')";
     mysql_query($query, $myConnect);
@@ -54,13 +55,49 @@ while ($row = mysql_fetch_array($mysql_query)) {
 mysql_free_result($mysql_query);
 
 
-$mysql_query = mysql_query(
-"SELECT log.*,s.name as service_name,cl.passport, d.name as department,
+
+$select_query = "SELECT log.*,s.name as service_name,cl.passport, d.name as department,
 cl.name as client_name,cl.middlename, cl.surname,cl.birth_date FROM `service_log` as log
 inner join `services` as s on s.service_id = log.service_id
 inner join `departments` as d on d.department_id = s.department_id
 inner join `contract` as c on c.contract_num = log.contract_num
-inner join `client` as cl  on cl.passport = c.client_passport", $myConnect);
+inner join `client` as cl  on cl.passport = c.client_passport";
+
+if (isset($_POST['search'])) {
+    $service = $_POST['service_id'];
+    $department = $_POST['department_id'];
+    $client = $_POST['client'];
+    $date = $_POST['date'];
+    if($date){
+        $date = date("Y-m-d", strtotime($date));
+    }
+    if ($service > -1 || $department > -1 || $client > -1 || $date) {
+        $select_query = $select_query . " where ";
+    }
+    if ($service > -1) {
+        $select_query = $select_query . " s.service_id = $service";
+    }
+    if ($department > -1) {
+        if ($service > -1) {
+            $select_query = $select_query . " and ";
+        }
+        $select_query = $select_query . " d.department_id = $department";
+    }
+    if ($client > -1) {
+        if ($service > -1 || $department > -1) {
+            $select_query = $select_query . " and ";
+        }
+        $select_query = $select_query . " cl.passport = '$client'";
+    }
+    if ($date) {
+        if ($service > -1 || $department > -1 || $client > -1) {
+            $select_query = $select_query . " and ";
+        }
+        $select_query = $select_query . " log.date = '$date'";
+    }
+}
+//die($select_query);
+$mysql_query = mysql_query($select_query, $myConnect);
 if (!$mysql_query) {
     die(mysql_error());
 }
@@ -69,6 +106,28 @@ while ($row = mysql_fetch_array($mysql_query)) {
     $logs[] = $row;
 }
 mysql_free_result($mysql_query);
+
+
+$mysql_query = mysql_query("select * from `departments`", $myConnect);
+if (!$mysql_query) {
+    die(mysql_error());
+}
+$departments = array();
+while ($row = mysql_fetch_array($mysql_query)) {
+    $departments[] = $row;
+}
+mysql_free_result($mysql_query);
+
+$mysql_query = mysql_query("select * from `client`", $myConnect);
+if (!$mysql_query) {
+    die(mysql_error());
+}
+$clients = array();
+while ($row = mysql_fetch_array($mysql_query)) {
+    $clients[] = $row;
+}
+mysql_free_result($mysql_query);
+
 
 ?>
 <table class="content">
@@ -93,7 +152,7 @@ mysql_free_result($mysql_query);
                     $surname = $contract["surname"];
                     $name = $contract["name"];
                     $middlename = $contract["middlename"];
-                    echo("<option value='$contract_num'>$contract_num(с $start по $end) клиент: $surname $name $middlename</option> ");
+                    echo("<option value='$contract_num'>№ $contract_num(с $start по $end) клиент: $surname $name $middlename</option> ");
                 }
                 ?>
             </select>
@@ -127,18 +186,18 @@ mysql_free_result($mysql_query);
         <th>Дата рождения клиента</th>
     </tr>
     <?php
-    foreach($logs as $l){
-        $id= $l['id'];
-        $contract_num= $l['contract_num'];
-        $service_id= $l['service_id'];
-        $date= $l['date'];
-        $service_name= $l['service_name'];
+    foreach ($logs as $l) {
+        $id = $l['id'];
+        $contract_num = $l['contract_num'];
+        $service_id = $l['service_id'];
+        $date = $l['date'];
+        $service_name = $l['service_name'];
         $passport = $l['passport'];
-        $department= $l['department'];
-        $client_name= $l['client_name'];
-        $middlename= $l['middlename'];
-        $birth_date= $l['birth_date'];
-        $surname= $l['surname'];
+        $department = $l['department'];
+        $client_name = $l['client_name'];
+        $middlename = $l['middlename'];
+        $birth_date = $l['birth_date'];
+        $surname = $l['surname'];
         echo("<tr>");
         echo("<td>$contract_num</td>");
         echo("<td>$service_name</td>");
@@ -149,7 +208,51 @@ mysql_free_result($mysql_query);
         echo("</tr>");
     }
     ?>
-
 </table>
+<form action="index.php" method="post">
+    Поиск:<br>
+    По Названию
+    <select name='service_id'>
+        <option value='-1'>Не выбрано</option>
+        <?php
+        foreach ($services as $service) {
+            $name = $service["name"];
+            $id = $service["service_id"];
+            echo("<option value='$id'>$name</option> ");
+        }
+        ?>
+    </select>
+    <br>
+    По отделу
+    <select name='department_id'>
+        <option value='-1'>Не выбран</option>
+        <?php
+        foreach ($departments as $department) {
+            $name = $department["name"];
+            $id = $department["department_id"];
+            echo("<option value='$id'>$name</option> ");
+        }
+        ?>
+    </select>
+    <br>
+    По клиенту
+    <select name='client'>
+        <option value='-1'>Не выбран</option>
+        <?php
+        foreach ($clients as $cleint) {
+            $surname = $cleint["surname"];
+            $name = $cleint["name"];
+            $middlename = $cleint["middlename"];
+            $passport = $cleint["passport"];
+            echo("<option value='$passport'>$surname $name $middlename ($passport)</option> ");
+        }
+        ?>
+    </select>
+    <br>
+    По дате оказания услуги
+    <input type="text" name='date'>
+    <br>
+    <input type="submit" name='search' value="Искать">
+</form>
 </body>
 </html>
